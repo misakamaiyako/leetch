@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<style type=text/css>
+  body{
+    margin: 0;
+  }
+  #id span{
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    box-sizing: border-box;
+    border: 1px solid black;
+  }
+</style>
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div style="width: 800px;height: 800px;font-size: 0" id="id"></div>
+<div>
+  <span style='color: red'>■</span>代表目标点，
+  <span style='color: black'>■</span>代表不能通过的点
+  <span style='color: green'>■</span>代表使用过的点，
+  <span style='color: blueviolet'>■</span>代表下一轮搜索的点
+</div>
+<script>
+  const id = document.getElementById('id');
+  const total = 100 ** 2;
+  let count = 0;
+
+  function td() {
+    if (count < total) {
+      let t = document.createElement('span')
+      t.id = [count % 100, Math.floor(count / 100)].join()
+      id.append(t)
+      count++
+      td()
+    }
+  }
+  td()///这里会超出调用堆栈，需要手动在控制台调用几次，完成迷宫的绘制
+  /***
+   *
+   * @param blocked 禁止通过的块
+   * @param source  出发点
+   * @param target 目标点
+   * @param hasNext 是否是反向搜索的flag
+   * @return {Promise<boolean|*>}
+   * @description 广度优先搜索的方法判断是不是可以从迷宫的出发点到达目的点
+   */
+  async function isEscapePossible(blocked, source, target, hasNext = true) {
+    if (blocked.length === 0)
+      return true;
+    let currentPoints;
+    let nextPoints = new Set();
+    nextPoints.add(source.join(','));
+    ///因为是图，所以要记录使用过的块，树的话就不需要这个判断
+    let used = new Set();
+    /// 禁止通过的墙围成图形的最大面积，由两条迷宫的边加上禁止通过的墙的直线的等腰直角三角形
+    const maxArea = Math.ceil((blocked.length / 2) ** 2 / 2);
+    used.add(source.join());
+    let blockedSet = new Set();
+    document.getElementById(target.join(',')).style.borderColor = 'red';
+    const targetX = target[0];
+    const targetY = target[1];
+    await draw(target,'red')
+    for (let i = 0; i < blocked.length; i++) {
+      blockedSet.add(blocked[i].join(','));
+      await draw(blocked[i],'black')
+    }
+    ///搜索到之后提前退出的flag
+    let found = false
+    while (nextPoints.size > 0) {
+      currentPoints = nextPoints.entries();
+      nextPoints = new Set;
+      let current;
+      while (!(current = currentPoints.next()).done) {
+        if (found){
+          return true
+        }
+        let x;
+        let y;
+        [x, y] = current.value[0].split(',');
+        await draw([x, y],'green')
+        used.add(x + ',' + y);
+        x = parseInt(x);
+        y = parseInt(y);
+        ///从出发点和目标点分别开始搜索迷宫区域大于禁止通过块围成的面积后，就可以认为起点是能够到达终点的，不需要继续搜索了
+        if (used.size > maxArea) {
+          if (hasNext) {
+            return isEscapePossible(blocked, target, source, false);
+          } else {
+            found = true
+            return true;
+          }
+        }
+        if (x === targetX && y === targetY) {
+          found = true
+          return true;
+        }
+        else {
+          ///判断是不是在边界和下一个块是不是被使用过或者禁止通过的块
+          if (x !== 0) {
+            if (notHave(used, [x - 1, y], blockedSet)) {
+              nextPoints.add([x - 1, y].join());
+              await draw([x - 1, y],'blueviolet')
+            }
+          }
+          if (y !== 0) {
+            if (notHave(used, [x, y - 1], blockedSet)) {
+              nextPoints.add([x, y - 1].join());
+              await draw([x, y - 1],'blueviolet')
+            }
+          }
+          if (x < 99) {
+            if (notHave(used, [x + 1, y], blockedSet)) {
+              nextPoints.add([x + 1, y].join());
+              await draw([x + 1, y],'blueviolet')
+            }
+          }
+          if (y < 99) {
+            if (notHave(used, [x, y + 1], blockedSet)) {
+              nextPoints.add([x, y + 1].join());
+              await draw([x, y + 1],'blueviolet')
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+  function notHave(set, value, blockedSet) {
+    const v = value[0] + ',' + value[1];
+    return !set.has(v) && !blockedSet.has(v);
+  }
+  /// red代表目标点，black代表不能通过的点，green代表使用过的点，blueviolet代表下一轮搜索的点
+  function draw(point, color) {
+    document.getElementById([point[0], point[1]].join(',')).style.backgroundColor = color;
+    return new Promise((resolve) => {
+      requestAnimationFrame(resolve)
+    });
+  }
+  function test(){
+    isEscapePossible([[0,99],[1,98],[2,97],[3,96],[4,95],[5,94],[6,93],[7,92],[8,91],[9,90],[10,89],[11,88],[12,87],[13,86],[14,85],[15,84],[16,83],[17,82],[18,81],[19,80],[20,79],[21,78],[22,77],[23,76],[24,75],[25,74],[26,73],[27,72],[28,71],[29,70],[30,69],[31,68],[32,67],[33,66],[34,65],[35,64],[36,63],[37,62],[38,61],[39,60],[40,59],[41,58],[42,57],[43,56],[44,55],[45,54],[46,53],[47,52],[48,51],[49,50],[50,49],[51,48],[52,47],[53,46],[54,45],[55,44],[56,43],[57,42],[58,41],[59,40],[60,39],[61,38],[62,37],[63,36],[64,35],[65,34],[66,33],[67,32],[68,31],[69,30],[70,29],[71,28],[72,27],[73,26],[74,25],[75,24],[76,23],[77,22],[78,21],[79,20],[80,19],[81,18],[82,17],[83,16],[84,15],[85,14],[86,13],[87,12],[88,11],[89,10],[90,9],[91,8],[92,7],[93,6],[94,5],[95,4],[96,3],[97,2],[98,1],[99,0],[0,99],[1,98],[2,97],[3,96],[4,95],[5,94],[6,93],[7,92],[8,91],[9,90],[10,89],[11,88],[12,87],[13,86],[14,85],[15,84],[16,83],[17,82],[18,81],[19,80],[20,79],[21,78],[22,77],[23,76],[24,75],[25,74],[26,73],[27,72],[28,71],[29,70],[30,69],[31,68],[32,67],[33,66],[34,65],[35,64],[36,63],[37,62],[38,61],[39,60],[40,59],[41,58],[42,57],[43,56],[44,55],[45,54],[46,53],[47,52],[48,51],[49,50],[50,49],[51,48],[52,47],[53,46],[54,45],[55,44],[56,43],[57,42],[58,41],[59,40],[60,39],[61,38],[62,37],[63,36],[64,35],[65,34],[66,33],[67,32],[68,31],[69,30],[70,29],[71,28],[72,27],[73,26],[74,25],[75,24],[76,23],[77,22],[78,21],[79,20],[80,19],[81,18],[82,17],[83,16],[84,15],[85,14],[86,13],[87,12],[88,11],[89,10],[90,9],[91,8],[92,7],[93,6],[94,5],[95,4],[96,3],[97,2],[98,1],[99,0]],
+      [1,2],
+      [20,20]).then(value => console.log(value))
+  }
+</script>
+</body>
+</html>
