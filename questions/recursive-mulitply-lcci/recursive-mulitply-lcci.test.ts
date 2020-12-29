@@ -6,7 +6,6 @@ test('Test1',()=>{
 test('random',()=>{
 	let A = Math.random()*1000|0
 	let B = Math.random()*1000|0
-	console.log(A,B)
 	expect(multiply(A,B)).toBe(A*B)
 })
 test('Test2',()=>{

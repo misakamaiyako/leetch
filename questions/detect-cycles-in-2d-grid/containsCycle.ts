@@ -1,30 +1,36 @@
 export default function containsCycle (grid:string[][]):boolean {
-  let used:Set<string> = new Set<string>()
-  return DP(0, 0, grid[ 0 ][ 0 ], used, grid, [])
+  const width = grid[ 0 ].length;
+  const height = grid.length
+  let flap:Array<Array<boolean>> = []
+  for (let i = 0; i < height; i++) {
+    flap.push(new Array(width).fill(false))
+  }
+  flap[ 0 ][ 0 ] = true;
+  let flap2:Array<Array<boolean>> = []
+  for (let i = 0; i < height; i++) {
+    flap2.push(new Array(width).fill(false))
+  }
+  flap2[ 0 ][ 0 ] = true;
+  return (DP(grid, [ [ 0, 0 ] ], 1, 0, flap, 'left', width, height))||(DP(grid, [ [ 0, 0 ] ], 0, 1, flap2, 'up', width, height))
 }
 
-function DP (X:number, Y:number, value:string, used:Set<String>, map:string[][], currentSnake:string[]):boolean {
-  if (X < 0 || Y < 0 || X >= map[ 0 ].length || Y >= map.length) {
+function DP (grid:string[][], path:number[][], x:number, y:number, used:Array<Array<boolean>>, from:'up' | 'down' | 'left' | 'right', width:number, height:number):boolean {
+  if (x >= width || y >= height || x < 0 || y < 0) {
     return false
   }
-  if (used.has(X + ',' + Y)) {
-    if (map[ Y ][ X ] === value) {
-      const index = currentSnake.findIndex(t => t === X + ',' + Y)
-      if (index > -1 && (currentSnake.length - index >= 4)) {
-        console.log([ X, Y ], currentSnake)
-      }
-      return index > -1 && (currentSnake.length - index >= 4)
-    } else {
-      return false
-    }
-  } else {
-    used.add(X + ',' + Y)
+  const current = grid[ y ][ x ];
+  const first = grid[ path[ 0 ][ 1 ] ][ path[ 0 ][ 0 ] ]
+  if (used[ y ][ x ]) {
+    return path.length > 3 && current === first
   }
-  if (map[ Y ][ X ] === value) {
-    currentSnake.push(X + ',' + Y)
+  used[ y ][ x ] = true;
+  if (current === first) {
+    path.push([ x, y ])
   } else {
-    value = map[ Y ][ X ]
-    currentSnake = []
+    path = [ [ x, y ] ];
   }
-  return DP(X + 1, Y, value, used, map, currentSnake) || DP(X - 1, Y, value, used, map, currentSnake) || DP(X, Y + 1, value, used, map, currentSnake) || DP(X, Y - 1, value, used, map, currentSnake)
+  return (from !== "up" && DP(grid, path, x, y - 1, used, "down", width, height)) ||
+    (from !== "down" && DP(grid, path, x, y + 1, used, "up", width, height)) ||
+    (from !== "left" && DP(grid, path, x - 1, y, used, "right", width, height)) ||
+    (from !== "right" && DP(grid, path, x + 1, y, used, "left", width, height))
 }
