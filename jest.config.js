@@ -1,6 +1,7 @@
 module.exports = {
 	"roots": [
-		"questions/"
+		"questions/",
+    "functions/"
 	],
 	"testMatch": [
 		"**/__tests__/**/*.+(ts|tsx|js)",

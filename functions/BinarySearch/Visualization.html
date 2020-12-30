@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+  <title>二分查找</title>
+</head>
+<body>
+<table border='1px'>
+  <colgroup>
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+    <col width="100">
+  </colgroup>
+  <tr id='low'>
+    <td>低指针</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+    <td>4</td>
+    <td>5</td>
+    <td>6</td>
+    <td>7</td>
+    <td>8</td>
+    <td>9</td>
+    <td>10</td>
+  </tr>
+  <tr id='high'>
+    <td>高指针</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+<input type="number" value='7' id='value'>
+<button style='margin-top: 24px' onclick='search()'>查找</button>
+<script type="application/javascript">
+  async function BinarySearch(source, target) {
+    let lowTd=document.querySelectorAll('#low td:not(:first-child)');
+    let highTd=document.querySelectorAll('#high td:not(:first-child)');
+    let l = source.length;
+    let low = 0;
+    lowTd[low].textContent='↓'
+    let high = l - 1;
+    highTd[high].textContent = '↑'
+    let middle;
+    let middleValue;
+    while (low <= high) {
+      middle = Math.ceil((low + high) / 2);
+      middleValue = source[middle];
+      if (middleValue === target) {
+        return middle;
+      }
+      if (middleValue > target) {
+        highTd[high].textContent = ''
+        high = middle - 1;
+        try{
+          highTd[high].textContent = '↑'
+        } catch (e) {
+
+        }
+        await new Promise(resolve =>{
+          setTimeout(()=>{
+            resolve()
+          },1000)
+        })
+      }
+      else {
+        lowTd[low].textContent=''
+        low = middle + 1;
+        try{
+          lowTd[low].textContent='↓';
+        } catch (e) {
+
+        }
+        await new Promise(resolve => {
+          setTimeout(() => {
+            resolve()
+          }, 1000)
+        })
+      }
+    }
+    return -1;
+  }
+  function search(){
+    let lowTd=document.querySelectorAll('#low td:not(:first-child)');
+    let highTd=document.querySelectorAll('#high td:not(:first-child)');
+    lowTd.forEach(t=>t.textContent='')
+    highTd.forEach(t=>t.textContent='')
+    const target = parseInt(document.getElementById('value').value)
+    BinarySearch([0,1,2,3,4,5,6,7,8,9,10],target).then(alert)
+  }
+</script>
+</body>
+</html>
