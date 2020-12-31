@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>图的广度优先遍历</title>
+</head>
+<body>
+<table id="table" border="1"></table>
+<form>
+  <div>
+    <label for="x">起始点X：</label>
+    <input type="number" name="x" id="x" value="0">
+  </div>
+  <div>
+    <label for="y">起始点Y：</label>
+    <input type="number" name="y" id="y" value="0">
+  </div>
+  <div>
+    <label for="t">目标点：</label>
+    <input type="number" name="t" id="t" value="529">
+  </div>
+  <button type="button" onclick="search()">查找</button>
+</form>
+<div>
+  <span style="color: red">■</span>代表目标点，
+  <span style="color: green">■</span>代表使用过的点，
+  <span style="color: blueviolet">■</span>代表下一轮搜索的点
+</div>
+<script>
+  let source = []
+  !function () {
+    const table = document.getElementById('table');
+    let colgroup = document.createElement('colgroup')
+    for (let i = 0; i < 10; i++) {
+      const col = document.createElement('col');
+      col.width = '40';
+      colgroup.appendChild(col)
+    }
+    table.appendChild(colgroup);
+    for (let i = 0; i < 30; i++) {
+      let tr = document.createElement('tr');
+      let row = []
+      for (let j = 0; j < 30; j++) {
+        let td = document.createElement('td');
+        td.textContent = (i * 30 + j).toString();
+        td.id = (i * 30 + j).toString();
+        tr.appendChild(td)
+        row.push((i * 30 + j))
+      }
+      table.appendChild(tr)
+      source.push(row)
+    }
+  }()
+
+  function search() {
+    let tds = document.getElementsByTagName('td')[Symbol.iterator]();
+    let next;
+    while (!(next = tds.next()).done){
+      next.value.style.backgroundColor = '#FFF';
+    }
+    const x = parseInt(document.getElementById('x').value);
+    const y = parseInt(document.getElementById('y').value);
+    const t = parseInt(document.getElementById('t').value);
+    MapBFS(source, t, x, y)
+  }
+
+  async function MapBFS(map, target, startX = 0, startY = 0) {
+    document.getElementById(target.toString()).style.backgroundColor = 'red';
+    await new Promise((resolve) => {
+      requestAnimationFrame(resolve);
+    });
+    const m = map[0].length;
+    const n = map.length;
+    let current = [[startX, startY]];
+    let next = [];
+    //记录使用过的点
+    let flagMap = [];
+    for (let i = 0; i < n; i++) {
+      flagMap.push(new Array(m).fill(true));
+    }
+    flagMap[startY][startX] = false;
+    await draw([startX, startY], 'green');
+    while (current.length > 0) {
+      for (let i = 0; i < current.length; i++) {
+        const [x, y] = current[i];
+        await draw([x, y], 'green');
+        if (map[y][x] === target) {
+          return true;
+        }
+        //判断边界
+        if (x > 0) {
+          //判断是否使用过
+          if (flagMap[y][x - 1]) {
+            //将点记录为使用过的点，且放入下一次查询的数组内
+            flagMap[y][x - 1] = false;
+            next.push([x - 1, y]);
+            await draw([x - 1, y], 'blueviolet');
+          }
+        }
+        if (y > 0) {
+          if (flagMap[y - 1][x]) {
+            flagMap[y - 1][x] = false;
+            next.push([x, y - 1]);
+            await draw([x, y - 1], 'blueviolet');
+          }
+        }
+        if (x <= m - 2) {
+          if (flagMap[y][x + 1]) {
+            flagMap[y][x + 1] = false;
+            next.push([x + 1, y]);
+            await draw([x + 1, y], 'blueviolet');
+          }
+        }
+        if (y <= n - 2) {
+          if (flagMap[y + 1][x]) {
+            flagMap[y + 1][x] = false;
+            next.push([x, y + 1]);
+            await draw([x, y + 1], 'blueviolet');
+          }
+        }
+      }
+      current = next;
+      next = [];
+    }
+    return false;
+  }
+
+  function draw(point, color) {
+    document.querySelector(`table tr:nth-child(${point[1]+2})`).querySelector(`td:nth-child(${point[0]+1})`).style.backgroundColor = color;
+    return new Promise((resolve) => {
+      requestAnimationFrame(resolve);
+    });
+  }
+</script>
+</body>
+</html>
