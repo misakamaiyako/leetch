@@ -16,5 +16,5 @@ export default function BinarySearch (source:number[], target:number):number {
       low = middle + 1;
     }
   }
-  return -1
+  return -1;
 }
