@@ -1,28 +1,22 @@
 export default function countPairs (deliciousness:number[]):number {
-  let total:number = 0
-  let counted:Map<number, boolean> = new Map<number, boolean>()
-  const mode = 1e9 + 7
+  //
+  let need:Map<number,number> = new Map<number, number>();
+  let total:number = 0;
   const deliciousnessLength = deliciousness.length
   for (let i = 0; i < deliciousnessLength; i++) {
-    const pin1 = deliciousness[ i ]
-    for (let j = i + 1; j < deliciousnessLength; j++) {
-      const pin2 = deliciousness[ j ]
-      let count = (pin1 + pin2) % (mode)
-      let r = counted.get(count)
-      if (r === true) {
-        total++
-      } else if (r === undefined) {
-        let flag = getis2(count)
-        counted.set(count, flag)
-        if (flag) {
-          total++
+    const value = deliciousness[ i ]
+    for (let j = 0; j < 22; j++) {
+      const target = Math.pow(2,j)-value;
+      if (target>=0){
+        //target + value = 2^n;
+        if (need.has(target)){
+          // @ts-ignore
+          total+=need.get(target);
         }
       }
     }
+    //记录数字出现的次数
+    need.set(value,(need.get(value)||0)+1)
   }
-  return total
-}
-
-function getis2 (num:number):boolean {
-  return (Math.log(num) / Math.log(2)) % 1 === 0
+  return total%(1e9+7)
 }
