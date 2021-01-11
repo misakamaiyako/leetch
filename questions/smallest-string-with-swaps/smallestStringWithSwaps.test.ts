@@ -1,5 +1,5 @@
-import smallestStringWithSwaps from "./smallestStringWithSwaps";
-import {s,pairs} from './testX'
+import smallestStringWithSwaps from './smallestStringWithSwaps'
+import { s, pairs, result } from './testX'
 test('1',()=>{
   expect(smallestStringWithSwaps("dcab",
     [[0,3],[1,2],[0,2]])).toBe('abcd')
@@ -18,5 +18,5 @@ test('4',()=>{
 })
 test('5',()=>{
   // @ts-ignore
-  expect(smallestStringWithSwaps(s,pairs)).toBe("lpqqmwm")
+  expect(smallestStringWithSwaps(s, pairs)).toBe(result)
 })
