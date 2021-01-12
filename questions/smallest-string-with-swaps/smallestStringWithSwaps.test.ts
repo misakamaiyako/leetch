@@ -17,6 +17,10 @@ test('4',()=>{
     [[5,3],[3,0],[5,1],[1,1],[1,5],[3,0],[0,2]])).toBe("lpqqmwm")
 })
 test('5',()=>{
+  expect(smallestStringWithSwaps("rdpycmpktsnujtkw",
+    [[10,7],[15,8],[0,9],[15,15],[9,9],[11,15],[13,1],[9,11],[6,13],[15,12],[15,13],[2,1],[2,15],[0,7],[12,15],[7,10]])).toBe("djkycmnpprsttukw")
+})
+test('100',()=>{
   // @ts-ignore
   expect(smallestStringWithSwaps(s, pairs)).toBe(result)
 })

@@ -7,3 +7,5 @@
 - MapDFS：无向图的深度优先查找
 - TreeBFS： 树的广度优先查找
 - TreeDFS： 树的深度优先查找
+- UnionFind: 并查集
+- PriorityQueue: 优先级队列
