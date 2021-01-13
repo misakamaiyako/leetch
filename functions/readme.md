@@ -9,3 +9,4 @@
 - TreeDFS： 树的深度优先查找
 - UnionFind: 并查集
 - PriorityQueue: 优先级队列
+- ArrayToTree: 数组生成完全二叉树

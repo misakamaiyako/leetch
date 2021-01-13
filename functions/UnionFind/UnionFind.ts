@@ -1,13 +1,13 @@
 export default class UnionFind {
-  private parent:Array<number>;
-  private rank:Array<number>;
+  private parent:Uint32Array;
+  private rank:Uint32Array;
 
   constructor (n:number) {
-    this.parent = new Array<number>(n);
-    this.rank = new Array<number>(n);
+    this.parent = new Uint32Array(n);
+    this.rank = new Uint32Array(n);
     for (let i = 0; i < n; i++) {
       this.parent[ i ] = i;
-      this.rank[ i ] = i;
+      // this.rank[ i ] = i;
     }
   }
 
