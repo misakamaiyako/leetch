@@ -89,7 +89,7 @@ export default class PriorityQueue<T> {
   }
 
   getParentOf (index:number):number {
-    return index >>> 1;
+    return (index-1) >>> 1;
   }
 
   getLeftOf (index:number):number {
