@@ -1,6 +1,6 @@
 export default class PriorityQueue<T> {
   private length:number;
-  private queue:T[];
+  queue:T[];
   private compare?:(arg0:T, arg1:T) => boolean
   private maxLength?:number;
 
