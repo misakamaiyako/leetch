@@ -1,9 +1,27 @@
 export default function accountsMerge(accounts: string[][]): string[][] {
   let unionFind = new UnionFind()
-  for (let i = 0; i < accounts.length; i++) {
-    const user:string = accounts[i][0];
-    unionFind.union(user,accounts[i])
+  const emailToIndex:Map<string, number> = new Map<string, number>()
+  const emailToName:Map<string, string> = new Map<string, string>()
+  let emailsCount = 0
+  for (const account of accounts) {
+    const name = account[ 0 ]
+    const size = account.length
+    for (let i = 1; i < size; i++) {
+      const email = account[ i ]
+      if (!emailToIndex.has(email)) {
+        emailToIndex.set(email, emailsCount++)
+        emailToName.set(email, name)
+      }
+    }
   }
+  for (let i = 0; i < accounts.length; i++) {
+    const user:string = accounts[ i ][ 0 ]
+    unionFind.union(user, accounts[ i ])
+  }
+  let indexToEmail:Map<number, string> = new Map<number, string>()
+  // for (let email of emailToIndex) {
+  //   const index = unionFind.find(emailToIndex.get(email))
+  // }
   return unionFind.getMerge()
 }
 class UnionFind{
